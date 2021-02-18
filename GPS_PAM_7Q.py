@@ -163,6 +163,29 @@ class PAM_7Q_Interface:
         
             return GSA_Data
     
+    
+    def getGLL_Data(self):
+        
+        message = []
+        message = self.get_message()
+        GLL = message[len(message)-1]
+        if(GLL.strip().split(','))[0][3:]=="GLL":
+            data=(GLL.strip().split(','))
+            GLL_Data = {
+            "Latitude":data[1],
+            "Hemisphere_Lat":data[2],
+            "Longitude":data[3],
+            "Hemisphere_Lon":data[4],
+            "Time":data[5],
+            "Status":data[6],
+            "PosMode":data[7][:1],
+            "Checksum":data[7][2:]
+            }
+        
+            return GLL_Data
+                
+    '''
+    #FUTURE: If practical use
     def getGSV_Data(self):
         message = []
         message = self.get_message()
@@ -172,11 +195,11 @@ class PAM_7Q_Interface:
             GSV = message[i]               
             if(GSV.strip().split(','))[0][3:]=="GSV":
                 data=(GSV.strip().split(','))
-                numSats=data[3]
+                numSats=int(data[3])
+                print(numSats)
                 numSatsMod=numSats%4
-                
-            
-        
+                print(numSatsMod)
+    ''' 
    #Printing Functions 
     
     def printRMC(self, RMC):
@@ -236,6 +259,14 @@ class PAM_7Q_Interface:
         print("Position Dilution of Precision: "+GSA["PDOP"])
         print("Vertical Dilution of Precision: "+GSA["VDOP"])
         print("Horizontal Dilution of Precision: "+GSA["HDOP"])
-        print("Checksum: "+GSA["Checksum"])
+        print("Checksum: "+GSA["Checksum"]+"\n")
+        
+    def printGLL(self, GLL):
+        print("Status: "+ GLL["Status"])
+        print("Latitude: "+GLL["Latitude"]+" "+GLL["Hemisphere_Lat"])
+        print("Longitude: "+GLL["Longitude"]+" "+GLL["Hemisphere_Lon"])
+        print("Time: " + GLL["Time"])
+        print("PosMode: "+GLL["PosMode"])
+        print("Checksum: "+GLL["Checksum"]+"\n")
         
         
