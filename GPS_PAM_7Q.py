@@ -69,6 +69,7 @@ class PAM_7Q_Interface:
         if(RMC.strip().split(','))[0][3:]=="RMC":
             data=(RMC.strip().split(','))
             RMC_Data = {
+            "Suffix":data[0][1:3],
             "Time":data[1],
             "Status":data[2],
             "Latitude":data[3],
@@ -93,6 +94,7 @@ class PAM_7Q_Interface:
         if(VTG.strip().split(','))[0][3:]=="VTG":
             data=(VTG.strip().split(','))
             VTG_Data = {
+            "Suffix":data[0][1:3],
             "Course_1":data[1],     #Heading, Degrees
             "Reference_1":data[2],  #True or Magnetic
             "Course_2":data[3],     #Heading, Degrees
@@ -115,6 +117,7 @@ class PAM_7Q_Interface:
         if(GGA.strip().split(','))[0][3:]=="GGA":
             data=(GGA.strip().split(','))
             GGA_Data = {
+            "Suffix":data[0][1:3],
             "Time":data[1],
             "Latitude":data[2],
             "Hemisphere_Lat":data[3],
@@ -141,6 +144,7 @@ class PAM_7Q_Interface:
         if(GSA.strip().split(','))[0][3:]=="GSA":
             data=(GSA.strip().split(','))
             GSA_Data = {
+            "Suffix":data[0][1:3],
             "OpMode":data[1],        #A = 2D Automatic, M= Manual - forced
             "NavMode":data[2],       #1. Fix Not available, 2. 2D <4 Sat 3. 3D >3 Sat
             "SatUsedCh1":data[3],     #Sattelite used for Channel 1
@@ -172,6 +176,7 @@ class PAM_7Q_Interface:
         if(GLL.strip().split(','))[0][3:]=="GLL":
             data=(GLL.strip().split(','))
             GLL_Data = {
+            "Suffix":data[0][1:3],
             "Latitude":data[1],
             "Hemisphere_Lat":data[2],
             "Longitude":data[3],
@@ -200,10 +205,24 @@ class PAM_7Q_Interface:
                 numSatsMod=numSats%4
                 print(numSatsMod)
     ''' 
-   #Printing Functions 
+   #Printing Functions
+    
+    def printPrefix(self, Suffix):
+        if Suffix=="GP":
+            print("GPS Global Navigation System")
+        if Suffix=="GN":
+            print("GNSS Global Navigation System")
+        if Suffix=="GL":
+            print("GLONASS Global Navigation System")
+        if Suffix=="GA":
+            print("GALILEO Global Navigation System")
+        if Suffix=="BD":
+            print("BEIDOU Global Navigation System")
+        
     
     def printRMC(self, RMC):
         print("-----RMC Data-----")
+        self.printPrefix(RMC["Suffix"])
         print("Time: " + RMC["Time"])
         print("Status: "+ RMC["Status"])
         print("Latitude: "+RMC["Latitude"]+" "+RMC["Hemisphere_Lat"])
@@ -217,6 +236,7 @@ class PAM_7Q_Interface:
         
     def printVTG(self, VTG):
         print("-----VTG Data-----")
+        self.printPrefix(VTG["Suffix"])
         print("Course_1: " + VTG["Course_1"])
         print("Reference_1: "+ VTG["Reference_1"])
         print("Course_2: " + VTG["Course_2"])
@@ -228,6 +248,7 @@ class PAM_7Q_Interface:
         
     def printGGA(self, GGA):
         print("-----GGA Data-----")
+        self.printPrefix(GGA["Suffix"])
         print("Time: " + GGA["Time"])
         print("Latitude: "+GGA["Latitude"]+" "+GGA["Hemisphere_Lat"])
         print("Longitude: "+GGA["Longitude"]+" "+GGA["Hemisphere_Lon"])
@@ -242,6 +263,7 @@ class PAM_7Q_Interface:
         
     def printGSA(self, GSA):
         print("-----GSA Data-----")
+        self.printPrefix(GSA["Suffix"])
         print("Operational Mode: " + GSA["OpMode"])
         print("Navigational Mode: " + GSA["NavMode"])
         print("Satellite Used Ch1: "+GSA["SatUsedCh1"])
@@ -262,6 +284,7 @@ class PAM_7Q_Interface:
         print("Checksum: "+GSA["Checksum"]+"\n")
         
     def printGLL(self, GLL):
+        self.printPrefix(GLL["Suffix"])
         print("Status: "+ GLL["Status"])
         print("Latitude: "+GLL["Latitude"]+" "+GLL["Hemisphere_Lat"])
         print("Longitude: "+GLL["Longitude"]+" "+GLL["Hemisphere_Lon"])
