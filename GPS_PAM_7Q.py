@@ -42,7 +42,7 @@ class PAM_7Q_Interface:
             print("Port Must Be 1, or 2, see class definition for details")
             print("Port: "+self.port)
     
-    def get_message(self):
+    def getMessage(self):
         loop_start = False
         messages = []
         while self.byte !='$':
@@ -61,10 +61,12 @@ class PAM_7Q_Interface:
                     
         return messages
         
-    def getRMC_Data(self):
-        
+    def getRMCData(self, messages=None):
         message = []
-        message = self.get_message()
+        if messages is not None:
+            message = messages
+        else:
+            message = self.getMessage()
         RMC = message[0]
         if(RMC.strip().split(','))[0][3:]=="RMC":
             data=(RMC.strip().split(','))
@@ -87,9 +89,12 @@ class PAM_7Q_Interface:
         
             return RMC_Data
     
-    def getVTG_Data(self):
+    def getVTGData(self, messages=None):
         message = []
-        message = self.get_message()
+        if messages is not None:
+            message = messages
+        else:
+            message = self.getMessage()
         VTG = message[1]
         if(VTG.strip().split(','))[0][3:]=="VTG":
             data=(VTG.strip().split(','))
@@ -110,9 +115,12 @@ class PAM_7Q_Interface:
             return VTG_Data
         
     
-    def getGGA_Data(self): 
+    def getGGAData(self, messages=None): 
         message = []
-        message = self.get_message()
+        if messages is not None:
+            message = messages
+        else:
+            message = self.getMessage()
         GGA = message[2]
         if(GGA.strip().split(','))[0][3:]=="GGA":
             data=(GGA.strip().split(','))
@@ -137,9 +145,12 @@ class PAM_7Q_Interface:
         
             return GGA_Data
     
-    def getGSA_Data(self):
+    def getGSAData(self, messages=None):
         message = []
-        message = self.get_message()
+        if messages is not None:
+            message = messages
+        else:
+            message = self.getMessage()
         GSA = message[3]
         if(GSA.strip().split(','))[0][3:]=="GSA":
             data=(GSA.strip().split(','))
@@ -168,10 +179,13 @@ class PAM_7Q_Interface:
             return GSA_Data
     
     
-    def getGLL_Data(self):
+    def getGLLData(self, messages=None):
         
         message = []
-        message = self.get_message()
+        if messages is not None:
+            message = messages
+        else:
+            message = self.getMessage()
         GLL = message[len(message)-1]
         if(GLL.strip().split(','))[0][3:]=="GLL":
             data=(GLL.strip().split(','))
@@ -204,7 +218,20 @@ class PAM_7Q_Interface:
                 print(numSats)
                 numSatsMod=numSats%4
                 print(numSatsMod)
-    ''' 
+    '''
+    
+    def getAllData(self):
+        messages = self.getMessage()
+        RMC=self.getRMCData(messages)
+        VTG=self.getVTGData(messages)
+        GGA=self.getGGAData(messages)
+        GSA=self.getGSAData(messages)
+        GLL=self.getGLLData(messages)
+        
+        return RMC, VTG, GGA, GSA, GLL
+        
+        
+        
    #Printing Functions
     
     def printPrefix(self, Suffix):
