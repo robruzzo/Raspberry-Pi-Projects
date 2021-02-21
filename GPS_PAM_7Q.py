@@ -51,7 +51,8 @@ class PAM_7Q_Interface:
                 messages.append(message)
                 while loop_start:
                     message = self.ser.readline()
-                    if (message.strip().split(','))[0][3:]=="RMC":
+                    if (message.strip().split(','))[0][3:]=="GLL":
+                        messages.append(message)
                         break
                     else:
                         messages.append(message)
@@ -308,6 +309,7 @@ class PAM_7Q_Interface:
         print("Checksum: "+GSA["Checksum"]+"\n")
         
     def printGLL(self, GLL):
+        print("-----GLL Data-----")
         self.printPrefix(GLL["Suffix"])
         print("Status: "+ GLL["Status"])
         print("Latitude: "+GLL["Latitude"]+" "+GLL["Hemisphere_Lat"])
