@@ -1,4 +1,4 @@
-
+#Written for python 2.7
 import serial
 from time import sleep
 
@@ -30,18 +30,15 @@ class PAM_7Q_Interface:
         #Define setup parameters
         self.port = port
         self.baud = 9600
-        
+        self.bytesize = serial.EIGHTBITS
         #Data Variables
         self.byte=''           #Byte to determine if sentences are being transmitted
 
         if self.port =='1':
-            self.ser = serial.Serial("/dev/ttyAMA0",self.baud)
+            self.ser = serial.Serial("/dev/ttyAMA0",self.baud, bytesize=self.bytesize)
         if self.port =='2':
-            self.ser = serial.Serial("/dev/ttyS0",self.baud)
-        else:
-            print("Port Must Be 1, or 2, see class definition for details")
-            print("Port: "+self.port)
-    
+            self.ser = serial.Serial("/dev/ttyS0",self.baud, bytesize=self.bytesize)
+           
     def getMessage(self):
         loop_start = False
         messages = []
@@ -49,12 +46,12 @@ class PAM_7Q_Interface:
             self.byte= self.ser.read()
         while loop_start==False:
             message= self.ser.readline()
-            if (message.strip().split(','))[0]=="$GPRMC":
+            if (message.strip().split(','))[0][3:]=="RMC":
                 loop_start=True
                 messages.append(message)
                 while loop_start:
                     message = self.ser.readline()
-                    if (message.strip().split(','))[0]=="$GPRMC":
+                    if (message.strip().split(','))[0][3:]=="RMC":
                         break
                     else:
                         messages.append(message)
