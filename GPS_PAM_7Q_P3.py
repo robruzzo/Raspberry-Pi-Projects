@@ -1,4 +1,4 @@
-#Written for python 2.7
+#Written for python 3.x
 import serial
 from time import sleep
 import io
@@ -10,8 +10,10 @@ Port - Set depending on how your raspberry pi is configured and what generation 
 
 Baud: typically 9600
 
+
+
 Output - NMEA 0183 V2.3 Sentences:
-RMC - Recommended minimum data for GPS
+RMC - Recommended minimum data for GPS (message[0])
 VTG - Vector track and speed over the ground
 GGA - Fix Information
 GSA - Overall Satellite Data
@@ -56,7 +58,8 @@ class PAM_7Q_Interface:
                 messages.append(message)
                 while loop_start:
                     message = self.sio.readline()
-                    if (message.strip().split(','))[0][3:]=="RMC":
+                    if (message.strip().split(','))[0][3:]=="GLL":
+                        messages.append(message)
                         break
                     else:
                         messages.append(message)
@@ -220,6 +223,7 @@ class PAM_7Q_Interface:
                 print(numSats)
                 numSatsMod=numSats%4
                 print(numSatsMod)
+                #ADD the Rest Here
     '''
     
     def getAllData(self):
