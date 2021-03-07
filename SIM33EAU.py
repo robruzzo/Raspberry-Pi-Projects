@@ -41,7 +41,7 @@ class SIM33EAU:
             self.ser = serial.Serial("/dev/ttyAMA0",baudrate=self.baud, bytesize=self.bytesize, timeout=1)
         if self.port =='2':
             self.ser = serial.Serial("/dev/ttyS0",baudrate=self.baud, bytesize=self.bytesize, timeout=1)
-           
+            
     def getMessage(self):
         loop_start = False
         messages = []
@@ -49,7 +49,7 @@ class SIM33EAU:
             message= self.ser.readline()
             message=message.decode("utf-8")
             if message[0]=='$':
-                if (message.strip().split(','))[0][3:]=="VTG":
+                if (message.strip().split(','))[0][3:]=="GGA":
                     loop_start=True
                     messages.append(message)
                     while loop_start:
@@ -62,13 +62,13 @@ class SIM33EAU:
                             messages.append(message)
         return messages
         
-    def getRMCData(self, messages=None):
+    def getRMCData(self, messages=None,messagePos=1):
         message = []
         if messages is not None:
             message = messages
         else:
             message = self.getMessage()
-        RMC = message[0]
+        RMC = message[messagePos]
         if(RMC.strip().split(','))[0][3:]=="RMC":
             data=(RMC.strip().split(','))
             RMC_Data = {
@@ -90,13 +90,13 @@ class SIM33EAU:
         
             return RMC_Data
     
-    def getVTGData(self, messages=None):
+    def getVTGData(self, messages=None, messagePos=0):
         message = []
         if messages is not None:
             message = messages
         else:
             message = self.getMessage()
-        VTG = message[1]
+        VTG = message[messagePos]
         if(VTG.strip().split(','))[0][3:]=="VTG":
             data=(VTG.strip().split(','))
             VTG_Data = {
@@ -116,13 +116,13 @@ class SIM33EAU:
             return VTG_Data
         
     
-    def getGGAData(self, messages=None): 
+    def getGGAData(self, messages=None,messagePos=0): 
         message = []
         if messages is not None:
             message = messages
         else:
             message = self.getMessage()
-        GGA = message[2]
+        GGA = message[messagePos]
         if(GGA.strip().split(','))[0][3:]=="GGA":
             data=(GGA.strip().split(','))
             GGA_Data = {
@@ -345,7 +345,7 @@ class SIM33EAU:
             packet="PMTK314,-1"
         else:
             packet="PMTK314"+","+str(GPGLL)+","+str(GPRMC)+","+str(GPVTG)+","+str(GPGGA)+","+str(GPGSA)+","+str(GPGSV)+","+str(GPGRS)+","+str(GPGST)+",0,0,0,0,0,0,0,0,0,"+str(GPZDA)+","+str(MCHN)+","+str(DTM)
-        check=checksum(packet)[2:]
+        check=self.checksum(packet)[2:]
         if len(check)==1:
             check="0"+check
         output="$"+packet+"*"+check+"\r\n"
@@ -396,13 +396,14 @@ class SIM33EAU:
  
     def grabAndPrintData(self,num):
         x=0
-        self.ser.flushInput()
+        #self.ser.flushInput()
         while x < num:
             response=self.ser.readline()
             if len(response)>1:
                 response=response.decode()
-                if response.strip().split(',')[0][0]=="$":
-                    print(response)
+                if len(response)>1:
+                    if response.strip().split(',')[0][0]=="$":
+                        print(response)
             x+=1
             
     def changeBaudRate(self,baudrate):
